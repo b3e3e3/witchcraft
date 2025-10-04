@@ -11,7 +11,7 @@ const WALK_BOB_MULT: Vector2 = Vector2(0.1, 0.12)
 @export var speed: float = 8 # m/s
 @export var acceleration: float = 100 # m/s^2
 
-@export var jump_height: float = 1 # m
+@export var jump_height: float = 1.5 # m
 @export var camera_sens: float = 1
 
 var jumping: bool = false
