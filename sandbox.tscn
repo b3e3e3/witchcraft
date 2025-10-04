@@ -1,0 +1,100 @@
+[gd_scene load_steps=15 format=3 uid="uid://dg8il80lvwpit"]
+
+[ext_resource type="Script" uid="uid://d0j4863kbq3hf" path="res://player.gd" id="1_cojph"]
+[ext_resource type="Script" uid="uid://cgovebj66dsyy" path="res://ultimate-crosshairs-66e0cf9aa6cfb537be07d7d21ec227cfcc2ddf14/addons/ultimate_crosshairs/UltimateCrosshairs.gd" id="2_cojph"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_cojph"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_p7lbm"]
+sky_material = SubResource("ProceduralSkyMaterial_cojph")
+
+[sub_resource type="Environment" id="Environment_rvmsc"]
+background_mode = 2
+sky = SubResource("Sky_p7lbm")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_rvmsc"]
+radius = 0.3
+height = 1.8
+
+[sub_resource type="Curve" id="Curve_3h184"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.4, 0.1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_3h184"]
+
+[sub_resource type="VoxelGeneratorNoise2D" id="VoxelGeneratorNoise2D_cojph"]
+channel = 0
+height_start = -20.0
+height_range = 80.0
+noise = SubResource("FastNoiseLite_3h184")
+curve = SubResource("Curve_3h184")
+
+[sub_resource type="VoxelBlockyModelEmpty" id="VoxelBlockyModelEmpty_p7lbm"]
+
+[sub_resource type="VoxelBlockyModelCube" id="VoxelBlockyModelCube_rvmsc"]
+
+[sub_resource type="VoxelBlockyLibrary" id="VoxelBlockyLibrary_rjrbw"]
+models = Array[VoxelBlockyModel]([SubResource("VoxelBlockyModelEmpty_p7lbm"), SubResource("VoxelBlockyModelCube_rvmsc")])
+
+[sub_resource type="VoxelMesherBlocky" id="VoxelMesherBlocky_ypj6x"]
+library = SubResource("VoxelBlockyLibrary_rjrbw")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_44b12"]
+vertex_color_use_as_albedo = true
+
+[node name="Node3D" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_rvmsc")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Player" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.688633, 0)
+script = ExtResource("1_cojph")
+speed = 6.0
+jump_height = 2.0
+
+[node name="Camera" type="Camera3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+
+[node name="VoxelViewer" type="VoxelViewer" parent="Player/Camera"]
+
+[node name="RayCast3D" type="RayCast3D" parent="Player/Camera"]
+target_position = Vector3(0, -1, -5)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_rvmsc")
+
+[node name="VoxelTerrain" type="VoxelTerrain" parent="."]
+generator = SubResource("VoxelGeneratorNoise2D_cojph")
+mesher = SubResource("VoxelMesherBlocky_ypj6x")
+material_override = SubResource("StandardMaterial3D_44b12")
+use_gpu_generation = true
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="CenterContainer" type="CenterContainer" parent="CanvasLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="UltimateCrosshairs" type="Control" parent="CanvasLayer/CenterContainer"]
+layout_mode = 2
+script = ExtResource("2_cojph")
+spread_pixels = 0.0
+center_dot = false
+foreground_color = Color(0.18000486, 0.18000486, 0.18000486, 1)
+outline_color = Color(0, 0, 0, 0)
+metadata/_custom_type_script = "uid://cgovebj66dsyy"
