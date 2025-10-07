@@ -1,7 +1,10 @@
-[gd_scene load_steps=15 format=3 uid="uid://dg8il80lvwpit"]
+[gd_scene load_steps=20 format=3 uid="uid://dg8il80lvwpit"]
 
 [ext_resource type="Script" uid="uid://d0j4863kbq3hf" path="res://player.gd" id="1_cojph"]
+[ext_resource type="Script" uid="uid://dfhrcnpf2ev8g" path="res://world.gd" id="1_rvmsc"]
 [ext_resource type="Script" uid="uid://cgovebj66dsyy" path="res://ultimate-crosshairs-66e0cf9aa6cfb537be07d7d21ec227cfcc2ddf14/addons/ultimate_crosshairs/UltimateCrosshairs.gd" id="2_cojph"]
+[ext_resource type="Texture2D" uid="uid://butf25gugdodk" path="res://blocky_game_atlas.webp" id="2_p7lbm"]
+[ext_resource type="Script" uid="uid://dg7esmkq76vou" path="res://world_generator.gd" id="3_rjrbw"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_cojph"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -20,33 +23,47 @@ glow_enabled = true
 radius = 0.3
 height = 1.8
 
-[sub_resource type="Curve" id="Curve_3h184"]
-_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.4, 0.1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
-point_count = 3
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_3h184"]
-
-[sub_resource type="VoxelGeneratorNoise2D" id="VoxelGeneratorNoise2D_cojph"]
-channel = 0
-height_start = -20.0
-height_range = 80.0
-noise = SubResource("FastNoiseLite_3h184")
-curve = SubResource("Curve_3h184")
+[sub_resource type="VoxelGeneratorScript" id="VoxelGeneratorScript_rjrbw"]
+script = ExtResource("3_rjrbw")
 
 [sub_resource type="VoxelBlockyModelEmpty" id="VoxelBlockyModelEmpty_p7lbm"]
 
 [sub_resource type="VoxelBlockyModelCube" id="VoxelBlockyModelCube_rvmsc"]
+tile_left = Vector2i(0, 1)
+tile_right = Vector2i(0, 1)
+tile_bottom = Vector2i(1, 0)
+tile_back = Vector2i(0, 1)
+tile_front = Vector2i(0, 1)
+
+[sub_resource type="VoxelBlockyModelCube" id="VoxelBlockyModelCube_p7lbm"]
+tile_left = Vector2i(1, 0)
+tile_right = Vector2i(1, 0)
+tile_bottom = Vector2i(1, 0)
+tile_top = Vector2i(1, 0)
+tile_back = Vector2i(1, 0)
+tile_front = Vector2i(1, 0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rjrbw"]
+
+[sub_resource type="VoxelBlockyFluid" id="VoxelBlockyFluid_ypj6x"]
+material = SubResource("StandardMaterial3D_rjrbw")
+
+[sub_resource type="VoxelBlockyModelFluid" id="VoxelBlockyModelFluid_44b12"]
+color = Color(0.1882353, 0.41568628, 1, 0.39215687)
+fluid = SubResource("VoxelBlockyFluid_ypj6x")
 
 [sub_resource type="VoxelBlockyLibrary" id="VoxelBlockyLibrary_rjrbw"]
-models = Array[VoxelBlockyModel]([SubResource("VoxelBlockyModelEmpty_p7lbm"), SubResource("VoxelBlockyModelCube_rvmsc")])
+models = Array[VoxelBlockyModel]([SubResource("VoxelBlockyModelEmpty_p7lbm"), SubResource("VoxelBlockyModelCube_rvmsc"), SubResource("VoxelBlockyModelCube_p7lbm"), SubResource("VoxelBlockyModelFluid_44b12")])
 
 [sub_resource type="VoxelMesherBlocky" id="VoxelMesherBlocky_ypj6x"]
 library = SubResource("VoxelBlockyLibrary_rjrbw")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_44b12"]
 vertex_color_use_as_albedo = true
+albedo_texture = ExtResource("2_p7lbm")
 
 [node name="Node3D" type="Node3D"]
+script = ExtResource("1_rvmsc")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_rvmsc")
@@ -56,7 +73,7 @@ transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545
 shadow_enabled = true
 
 [node name="Player" type="CharacterBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.688633, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 33.688633, 0)
 script = ExtResource("1_cojph")
 speed = 6.0
 
@@ -64,6 +81,7 @@ speed = 6.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 
 [node name="VoxelViewer" type="VoxelViewer" parent="Player/Camera"]
+view_distance = 512
 
 [node name="RayCast3D" type="RayCast3D" parent="Player/Camera"]
 target_position = Vector3(0, -1, -5)
@@ -73,10 +91,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CapsuleShape3D_rvmsc")
 
 [node name="VoxelTerrain" type="VoxelTerrain" parent="."]
-generator = SubResource("VoxelGeneratorNoise2D_cojph")
+generator = SubResource("VoxelGeneratorScript_rjrbw")
 mesher = SubResource("VoxelMesherBlocky_ypj6x")
 material_override = SubResource("StandardMaterial3D_44b12")
-use_gpu_generation = true
+run_stream_in_editor = false
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 

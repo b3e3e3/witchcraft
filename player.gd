@@ -1,11 +1,11 @@
 class_name Player
 extends CharacterBody3D
 
-const SPRINT_FOV_MULT: float = 1.3
+const SPRINT_FOV_MULT: float = 0.3
 const SPRINT_SPEED_MULT: float = 0.3
-const SPRINT_BOB_MULT: Vector2 = Vector2(0.2, 0.16)
+const SPRINT_BOB_MULT: Vector2 = Vector2(0, 0.08)
 
-const WALK_BOB_MULT: Vector2 = Vector2(0.1, 0.12)
+const WALK_BOB_MULT: Vector2 = Vector2(0, 0.06)
 
 
 @export var speed: float = 8 # m/s
@@ -13,6 +13,9 @@ const WALK_BOB_MULT: Vector2 = Vector2(0.1, 0.12)
 
 @export var jump_height: float = 1.5 # m
 @export var camera_sens: float = 1
+
+var waiting_for_fly: bool = false
+var flying: bool = false
 
 var jumping: bool = false
 var sprinting: bool = false
@@ -24,6 +27,7 @@ var look_dir: Vector2
 var move_dir: Vector2
 
 var walk_vel: Vector3
+var fly_vel: Vector3
 var sprint_vel: Vector3
 var grav_vel: Vector3
 var jump_vel: Vector3
@@ -35,12 +39,13 @@ var jump_vel: Vector3
 
 @onready var camera: Camera3D = $Camera
 @onready var camera_base_fov: float = camera.fov
+var fov_offset: float
 var camera_bob_counter: float
 var bob_amount: float = 0.0
 
 @onready var block_highlight: MeshInstance3D = MeshInstance3D.new()
 
-func setup_hightlight () -> void:
+func setup_hightlight() -> void:
 	var mat := ShaderMaterial.new()
 	mat.shader = preload("res://outline.gdshader")
 	# mat.set_shader_parameter(&"outline_width", 2.0)
@@ -103,33 +108,52 @@ func _process(delta: float) -> void:
 		_break_blocks(target_pos)
 		_place_blocks(target_pos, rc.normal)
 		
+func _wait_for_fly() -> void:
+	await get_tree().create_timer(0.3).timeout
+	waiting_for_fly = false
+
+func tween_fov(time: float = 0.5) -> void:
+	var tween := get_tree().create_tween()
+	tween.set_ease(Tween.EASE_OUT)
+	tween.set_trans(Tween.TRANS_EXPO)
+	tween.tween_property(camera, ^'fov', camera_base_fov + fov_offset, time)
+
 func _physics_process(delta: float) -> void:
 	_camera_bob(delta)
-	if Input.is_action_just_pressed(&"jump"): jumping = true
+
+	if Input.is_action_just_pressed(&"jump"):
+		jumping = true
+		if waiting_for_fly:
+			fov_offset += camera.fov * SPRINT_FOV_MULT
+			flying = not flying
+		else:
+			waiting_for_fly = true
+			_wait_for_fly()
 	
 	if Input.is_action_pressed(&"sprint"):
 		if not sprinting and not is_zero_approx(velocity.x):
 			# camera_base_fov = camera.fov
-			var targ_fov := camera_base_fov * SPRINT_FOV_MULT
-
-			var tween := get_tree().create_tween()
-			tween.set_ease(Tween.EASE_OUT)
-			tween.set_trans(Tween.TRANS_EXPO)
-			tween.tween_property(camera, ^'fov', targ_fov, 0.5)
-		
+			
+			fov_offset += camera.fov * SPRINT_FOV_MULT
 			sprinting = true
 	elif Input.is_action_just_released(&"sprint"):
 		print(sprinting)
 		print(velocity)
-		var tween := get_tree().create_tween()
-		tween.set_ease(Tween.EASE_OUT)
-		tween.set_trans(Tween.TRANS_EXPO)
-		tween.tween_property(camera, ^'fov', camera_base_fov, 0.5)
+		fov_offset = 0
+		tween_fov()
 	else:
 		sprinting = false
+
+	tween_fov()
+
+	if not sprinting and not flying:
+		fov_offset = 0
 	
 	if mouse_captured: _handle_joypad_camera_rotation(delta)
-	velocity = _walk(delta) + _gravity(delta) + _jump(delta) + _sprint(delta)
+	
+	motion_mode = MOTION_MODE_FLOATING if flying else MOTION_MODE_GROUNDED
+
+	velocity = _walk(delta) + _gravity(delta) + _jump(delta) + _sprint(delta) + _fly(delta)
 	move_and_slide()
 
 func _handle_joypad_camera_rotation(delta: float, sens_mod: float = 1.0) -> void:
@@ -149,9 +173,18 @@ func _walk(delta: float):
 	return walk_vel
 
 func _gravity(delta: float):
-	grav_vel = Vector3.ZERO if is_on_floor() else grav_vel.move_toward(Vector3(0, velocity.y - gravity, 0), gravity * delta)
+	grav_vel = Vector3.ZERO if is_on_floor() or flying else grav_vel.move_toward(Vector3(0, velocity.y - gravity, 0), gravity * delta)
 	return grav_vel
 	
+func _fly(delta: float):
+	fly_vel = Vector3.ZERO
+
+	if flying:
+		fly_vel = Vector3.UP * Input.get_axis(&"sneak", &"jump") * 10
+		if is_on_floor():
+			flying = false
+	return fly_vel
+
 func _jump(delta: float):
 	if jumping:
 		if is_on_floor(): jump_vel = Vector3(0, sqrt(4 * jump_height * gravity), 0)
