@@ -50,7 +50,10 @@ func _generate_block(buffer: VoxelBuffer, origin: Vector3i, lod: int) -> void:
 
 				# var depth := base_height + (base_noise + peak_noise) * (elev_noise + eros_noise)
 				var elev := 0#clampf(elev_noise * 1.5, -1.0, 1.0)
-				var depth := base_height + (base_noise * scale) + (peak_noise * eros_noise)
+				var depth := base_height
+				depth += base_noise * scale
+				# depth += peak_noise * eros_noise
+
 				# depth *= elev_noise #- (scale/2)
 				if depth <= (origin.y + y) + SQUASH:
 					buffer.set_voxel(AIR, x, y, z)

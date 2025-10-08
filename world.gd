@@ -1,4 +1,3 @@
-@tool
 extends Node3D
 
 const WorldGenerator = preload("res://world_generator.gd")
