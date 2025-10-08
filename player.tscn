@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://bxuo8t178ndey"]
+[gd_scene load_steps=4 format=3 uid="uid://bxuo8t178ndey"]
 
 [ext_resource type="Script" uid="uid://d0j4863kbq3hf" path="res://player.gd" id="1_4flbx"]
+[ext_resource type="Script" uid="uid://cgovebj66dsyy" path="res://ultimate-crosshairs-66e0cf9aa6cfb537be07d7d21ec227cfcc2ddf14/addons/ultimate_crosshairs/UltimateCrosshairs.gd" id="2_onrkg"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_rvmsc"]
 radius = 0.3
@@ -22,3 +23,23 @@ target_position = Vector3(0, -1, -5)
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CapsuleShape3D_rvmsc")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="CenterContainer" type="CenterContainer" parent="CanvasLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="UltimateCrosshairs" type="Control" parent="CanvasLayer/CenterContainer"]
+layout_mode = 2
+script = ExtResource("2_onrkg")
+spread_pixels = 0.0
+center_dot = false
+foreground_color = Color(0.18000486, 0.18000486, 0.18000486, 1)
+outline_color = Color(0, 0, 0, 0)
+metadata/_custom_type_script = "uid://cgovebj66dsyy"

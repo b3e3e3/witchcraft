@@ -1,7 +1,6 @@
-[gd_scene load_steps=19 format=3 uid="uid://dg8il80lvwpit"]
+[gd_scene load_steps=18 format=3 uid="uid://dg8il80lvwpit"]
 
 [ext_resource type="Script" uid="uid://dfhrcnpf2ev8g" path="res://world.gd" id="1_rvmsc"]
-[ext_resource type="Script" uid="uid://cgovebj66dsyy" path="res://ultimate-crosshairs-66e0cf9aa6cfb537be07d7d21ec227cfcc2ddf14/addons/ultimate_crosshairs/UltimateCrosshairs.gd" id="2_cojph"]
 [ext_resource type="Texture2D" uid="uid://butf25gugdodk" path="res://blocky_game_atlas.webp" id="2_p7lbm"]
 [ext_resource type="PackedScene" uid="uid://bxuo8t178ndey" path="res://player.tscn" id="2_rjrbw"]
 [ext_resource type="Script" uid="uid://dg7esmkq76vou" path="res://world_generator.gd" id="3_rjrbw"]
@@ -76,23 +75,3 @@ generator = SubResource("VoxelGeneratorScript_rjrbw")
 mesher = SubResource("VoxelMesherBlocky_ypj6x")
 material_override = SubResource("StandardMaterial3D_44b12")
 run_stream_in_editor = false
-
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
-
-[node name="CenterContainer" type="CenterContainer" parent="CanvasLayer"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="UltimateCrosshairs" type="Control" parent="CanvasLayer/CenterContainer"]
-layout_mode = 2
-script = ExtResource("2_cojph")
-spread_pixels = 0.0
-center_dot = false
-foreground_color = Color(0.18000486, 0.18000486, 0.18000486, 1)
-outline_color = Color(0, 0, 0, 0)
-metadata/_custom_type_script = "uid://cgovebj66dsyy"
