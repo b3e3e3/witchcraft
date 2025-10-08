@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3 uid="uid://bxuo8t178ndey"]
+
+[ext_resource type="Script" uid="uid://d0j4863kbq3hf" path="res://player.gd" id="1_4flbx"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_rvmsc"]
+radius = 0.3
+height = 1.8
+
+[node name="Player" type="CharacterBody3D"]
+script = ExtResource("1_4flbx")
+speed = 6.0
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+
+[node name="VoxelViewer" type="VoxelViewer" parent="Camera"]
+view_distance = 512
+
+[node name="RayCast3D" type="RayCast3D" parent="Camera"]
+target_position = Vector3(0, -1, -5)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_rvmsc")

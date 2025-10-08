@@ -1,9 +1,9 @@
-[gd_scene load_steps=20 format=3 uid="uid://dg8il80lvwpit"]
+[gd_scene load_steps=19 format=3 uid="uid://dg8il80lvwpit"]
 
-[ext_resource type="Script" uid="uid://d0j4863kbq3hf" path="res://player.gd" id="1_cojph"]
 [ext_resource type="Script" uid="uid://dfhrcnpf2ev8g" path="res://world.gd" id="1_rvmsc"]
 [ext_resource type="Script" uid="uid://cgovebj66dsyy" path="res://ultimate-crosshairs-66e0cf9aa6cfb537be07d7d21ec227cfcc2ddf14/addons/ultimate_crosshairs/UltimateCrosshairs.gd" id="2_cojph"]
 [ext_resource type="Texture2D" uid="uid://butf25gugdodk" path="res://blocky_game_atlas.webp" id="2_p7lbm"]
+[ext_resource type="PackedScene" uid="uid://bxuo8t178ndey" path="res://player.tscn" id="2_rjrbw"]
 [ext_resource type="Script" uid="uid://dg7esmkq76vou" path="res://world_generator.gd" id="3_rjrbw"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_cojph"]
@@ -18,10 +18,6 @@ background_mode = 2
 sky = SubResource("Sky_p7lbm")
 tonemap_mode = 2
 glow_enabled = true
-
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_rvmsc"]
-radius = 0.3
-height = 1.8
 
 [sub_resource type="VoxelGeneratorScript" id="VoxelGeneratorScript_rjrbw"]
 script = ExtResource("3_rjrbw")
@@ -72,23 +68,8 @@ environment = SubResource("Environment_rvmsc")
 transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
 shadow_enabled = true
 
-[node name="Player" type="CharacterBody3D" parent="."]
+[node name="Player" parent="." instance=ExtResource("2_rjrbw")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 33.688633, 0)
-script = ExtResource("1_cojph")
-speed = 6.0
-
-[node name="Camera" type="Camera3D" parent="Player"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
-
-[node name="VoxelViewer" type="VoxelViewer" parent="Player/Camera"]
-view_distance = 512
-
-[node name="RayCast3D" type="RayCast3D" parent="Player/Camera"]
-target_position = Vector3(0, -1, -5)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-shape = SubResource("CapsuleShape3D_rvmsc")
 
 [node name="VoxelTerrain" type="VoxelTerrain" parent="."]
 generator = SubResource("VoxelGeneratorScript_rjrbw")
