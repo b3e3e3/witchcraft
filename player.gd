@@ -32,10 +32,10 @@ var sprint_vel: Vector3
 var grav_vel: Vector3
 var jump_vel: Vector3
 
-#region voxels
-@onready var terrain: VoxelTerrain = $"../VoxelTerrain"
-@onready var voxel_tool = terrain.get_voxel_tool()
-#endregion
+# #region voxels
+# @onready var terrain: VoxelTerrain = $"../VoxelTerrain"
+# @onready var voxel_tool = terrain.get_voxel_tool()
+# #endregion
 
 @onready var camera: Camera3D = $Camera
 @onready var camera_base_fov: float = camera.fov
@@ -66,7 +66,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		look_dir = event.relative * 0.001
 		if mouse_captured: _rotate_camera()
-	if Input.is_action_just_pressed(&"exit"): get_tree().quit()
+	if Input.is_action_just_pressed(&"exit"):
+		release_mouse()
 
 func _camera_bob(delta: float) -> void:
 	var _mult := WALK_BOB_MULT if not sprinting else SPRINT_BOB_MULT
@@ -81,16 +82,16 @@ func _camera_bob(delta: float) -> void:
 	camera.v_offset = _target_v * bob_amount
 	camera.h_offset = _target_h * bob_amount
 
-func _break_blocks(target_pos: Vector3i) -> void:
-	if Input.is_action_just_pressed(&"break"):
-		voxel_tool.mode = VoxelTool.MODE_REMOVE
-		voxel_tool.do_point(target_pos)
+# func _break_blocks(target_pos: Vector3i) -> void:
+# 	if Input.is_action_just_pressed(&"break"):
+# 		voxel_tool.mode = VoxelTool.MODE_REMOVE
+# 		voxel_tool.do_point(target_pos)
 
-func _place_blocks(target_pos: Vector3i, normal: Vector3) -> void:
-	if Input.is_action_just_pressed(&"interact"):
-		voxel_tool.mode = VoxelTool.MODE_ADD
-		print("add")
-		voxel_tool.set_voxel(target_pos + Vector3i(normal), 1)
+# func _place_blocks(target_pos: Vector3i, normal: Vector3) -> void:
+# 	if Input.is_action_just_pressed(&"interact"):
+# 		voxel_tool.mode = VoxelTool.MODE_ADD
+# 		print("add")
+# 		voxel_tool.set_voxel(target_pos + Vector3i(normal), 1)
 
 func _hightlight_blocks(rc: VoxelRaycastResult):
 	if rc:
@@ -99,14 +100,14 @@ func _hightlight_blocks(rc: VoxelRaycastResult):
 	else:
 		block_highlight.visible = false
 
-func _process(delta: float) -> void:
-	var rc := voxel_tool.raycast(camera.global_position, -camera.global_basis.z, 5.0)
-	_hightlight_blocks(rc)
-	if rc:
-		var target_pos := rc.position
+# func _process(delta: float) -> void:
+# 	var rc := voxel_tool.raycast(camera.global_position, -camera.global_basis.z, 5.0)
+# 	_hightlight_blocks(rc)
+# 	if rc:
+# 		var target_pos := rc.position
 
-		_break_blocks(target_pos)
-		_place_blocks(target_pos, rc.normal)
+# 		_break_blocks(target_pos)
+# 		_place_blocks(target_pos, rc.normal)
 		
 func _wait_for_fly() -> void:
 	await get_tree().create_timer(0.3).timeout
