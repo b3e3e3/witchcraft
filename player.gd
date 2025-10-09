@@ -100,7 +100,17 @@ func _hightlight_blocks(rc: VoxelRaycastResult):
 	else:
 		block_highlight.visible = false
 
-# func _process(delta: float) -> void:
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed(&"interact"):
+		var space_state = get_world_3d().direct_space_state
+		var from = camera.project_ray_origin(event.position)
+		var to = from + camera.project_ray_normal(event.position) * 5.0
+
+		var query = PhysicsRayQueryParameters3D.create(from, to)
+
+		var result = space_state.intersect_ray(query)
+
+func _process(delta: float) -> void: pass
 # 	var rc := voxel_tool.raycast(camera.global_position, -camera.global_basis.z, 5.0)
 # 	_hightlight_blocks(rc)
 # 	if rc:
