@@ -1,6 +1,9 @@
 class_name Player
 extends CharacterBody3D
 
+signal block_placed(where: Vector3i, what: int)
+signal block_broken(where: Vector3i, what: int)
+
 const SPRINT_FOV_MULT: float = 0.3
 const SPRINT_SPEED_MULT: float = 0.3
 const SPRINT_BOB_MULT: Vector2 = Vector2(0, 0.08)
@@ -45,6 +48,29 @@ var bob_amount: float = 0.0
 
 @onready var block_highlight: MeshInstance3D = MeshInstance3D.new()
 
+var current_block: int = 4
+func get_current_block_texture() -> Texture2D:
+	var tex := (terrain.material_override as StandardMaterial3D).albedo_texture
+
+	var mesher := terrain.mesher as VoxelMesherBlocky
+	var library := mesher.library as VoxelBlockyLibrary
+	if current_block > library.models.size()-1 or current_block < 0: return null
+
+	var block := library.models[current_block]
+	var atlas: AtlasTexture = null
+
+	if block is VoxelBlockyModelCube:
+		var cube := block as VoxelBlockyModelCube
+		var tile: Vector2 = cube.get_tile(5) * cube.atlas_size_in_tiles
+		atlas = AtlasTexture.new()
+		atlas.atlas = tex
+		atlas.region = Rect2(tile, Vector2.ONE * 16)
+
+	$CanvasLayer/Label.text = ["Air", "Grass", "Dirt", "Water", "Machine", "Cable"][current_block] + (" (%s)" % current_block)
+		
+	return atlas
+
+
 func setup_hightlight() -> void:
 	var mat := ShaderMaterial.new()
 	mat.shader = preload("res://outline.gdshader")
@@ -66,7 +92,18 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		look_dir = event.relative * 0.001
 		if mouse_captured: _rotate_camera()
-	if Input.is_action_just_pressed(&"exit"): get_tree().quit()
+	if Input.is_action_just_pressed(&"exit"):
+		release_mouse()
+
+	if Input.is_action_just_pressed(&"fly_down") and current_block > 0:
+		current_block -= 1
+		$CanvasLayer/TextureRect.texture = get_current_block_texture()
+	elif Input.is_action_just_pressed(&"fly_up"):
+		var mesher := terrain.mesher as VoxelMesherBlocky
+		var library := mesher.library as VoxelBlockyLibrary
+		if current_block < library.models.size()-1:
+			current_block += 1
+			$CanvasLayer/TextureRect.texture = get_current_block_texture()
 
 func _camera_bob(delta: float) -> void:
 	var _mult := WALK_BOB_MULT if not sprinting else SPRINT_BOB_MULT
@@ -84,13 +121,35 @@ func _camera_bob(delta: float) -> void:
 func _break_blocks(target_pos: Vector3i) -> void:
 	if Input.is_action_just_pressed(&"break"):
 		voxel_tool.mode = VoxelTool.MODE_REMOVE
+		var bid := voxel_tool.get_voxel(target_pos)
 		voxel_tool.do_point(target_pos)
+		block_broken.emit(target_pos, bid)
 
+# var firstpos: Vector3i
 func _place_blocks(target_pos: Vector3i, normal: Vector3) -> void:
 	if Input.is_action_just_pressed(&"interact"):
+		var target_space := target_pos + Vector3i(normal)
 		voxel_tool.mode = VoxelTool.MODE_ADD
-		print("add")
-		voxel_tool.set_voxel(target_pos + Vector3i(normal), 1)
+		voxel_tool.set_voxel(target_space, current_block)
+		block_placed.emit(target_space, current_block)
+		# if not firstpos:
+		# 	firstpos = target_space
+		# 	print('Firstpos', firstpos)
+		# else:
+		# 	match -(firstpos-target_space):
+		# 		Vector3i.LEFT:
+		# 			print("Left")
+		# 		Vector3i.RIGHT:
+		# 			print("Right")
+		# 		Vector3i.UP:
+		# 			print("Top")
+		# 		Vector3i.DOWN:
+		# 			print("Bottom")
+		# 		Vector3i.FORWARD:
+		# 			print("Front")
+		# 		Vector3i.BACK:
+		# 			print("Back")
+		
 
 func _hightlight_blocks(rc: VoxelRaycastResult):
 	if rc:
@@ -98,6 +157,16 @@ func _hightlight_blocks(rc: VoxelRaycastResult):
 		block_highlight.global_position = (rc.position as Vector3) + (Vector3.ONE * 0.5)
 	else:
 		block_highlight.visible = false
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed(&"interact"):
+		var space_state = get_world_3d().direct_space_state
+		var from = camera.project_ray_origin(event.position)
+		var to = from + camera.project_ray_normal(event.position) * 5.0
+
+		var query = PhysicsRayQueryParameters3D.create(from, to)
+
+		var result = space_state.intersect_ray(query)
 
 func _process(delta: float) -> void:
 	var rc := voxel_tool.raycast(camera.global_position, -camera.global_basis.z, 5.0)

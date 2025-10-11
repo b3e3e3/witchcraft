@@ -1,10 +1,11 @@
-[gd_scene load_steps=19 format=3 uid="uid://dg8il80lvwpit"]
+[gd_scene load_steps=20 format=3 uid="uid://dg8il80lvwpit"]
 
 [ext_resource type="Script" uid="uid://dfhrcnpf2ev8g" path="res://world.gd" id="1_rvmsc"]
-[ext_resource type="Script" uid="uid://cgovebj66dsyy" path="res://ultimate-crosshairs-66e0cf9aa6cfb537be07d7d21ec227cfcc2ddf14/addons/ultimate_crosshairs/UltimateCrosshairs.gd" id="2_cojph"]
 [ext_resource type="Texture2D" uid="uid://butf25gugdodk" path="res://blocky_game_atlas.webp" id="2_p7lbm"]
 [ext_resource type="PackedScene" uid="uid://bxuo8t178ndey" path="res://player.tscn" id="2_rjrbw"]
 [ext_resource type="Script" uid="uid://dg7esmkq76vou" path="res://world_generator.gd" id="3_rjrbw"]
+[ext_resource type="VoxelBlockyModelCube" uid="uid://c2krob74pbsuh" path="res://blocks/machine.tres" id="4_rjrbw"]
+[ext_resource type="VoxelBlockyModelCube" uid="uid://s6f3aku07hlp" path="res://blocks/cable.tres" id="5_ypj6x"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_cojph"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -46,10 +47,11 @@ material = SubResource("StandardMaterial3D_rjrbw")
 
 [sub_resource type="VoxelBlockyModelFluid" id="VoxelBlockyModelFluid_44b12"]
 color = Color(0.1882353, 0.41568628, 1, 0.39215687)
+culls_neighbors = false
 fluid = SubResource("VoxelBlockyFluid_ypj6x")
 
 [sub_resource type="VoxelBlockyLibrary" id="VoxelBlockyLibrary_rjrbw"]
-models = Array[VoxelBlockyModel]([SubResource("VoxelBlockyModelEmpty_p7lbm"), SubResource("VoxelBlockyModelCube_rvmsc"), SubResource("VoxelBlockyModelCube_p7lbm"), SubResource("VoxelBlockyModelFluid_44b12")])
+models = Array[VoxelBlockyModel]([SubResource("VoxelBlockyModelEmpty_p7lbm"), SubResource("VoxelBlockyModelCube_rvmsc"), SubResource("VoxelBlockyModelCube_p7lbm"), SubResource("VoxelBlockyModelFluid_44b12"), ExtResource("4_rjrbw"), ExtResource("5_ypj6x")])
 
 [sub_resource type="VoxelMesherBlocky" id="VoxelMesherBlocky_ypj6x"]
 library = SubResource("VoxelBlockyLibrary_rjrbw")
@@ -57,6 +59,7 @@ library = SubResource("VoxelBlockyLibrary_rjrbw")
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_44b12"]
 vertex_color_use_as_albedo = true
 albedo_texture = ExtResource("2_p7lbm")
+texture_filter = 0
 
 [node name="Node3D" type="Node3D"]
 script = ExtResource("1_rvmsc")
@@ -69,7 +72,8 @@ transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545
 shadow_enabled = true
 
 [node name="Player" parent="." instance=ExtResource("2_rjrbw")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 33.688633, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 60, 0)
+speed = 32.0
 
 [node name="VoxelTerrain" type="VoxelTerrain" parent="."]
 generator = SubResource("VoxelGeneratorScript_rjrbw")
@@ -77,22 +81,6 @@ mesher = SubResource("VoxelMesherBlocky_ypj6x")
 material_override = SubResource("StandardMaterial3D_44b12")
 run_stream_in_editor = false
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
-
-[node name="CenterContainer" type="CenterContainer" parent="CanvasLayer"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="UltimateCrosshairs" type="Control" parent="CanvasLayer/CenterContainer"]
-layout_mode = 2
-script = ExtResource("2_cojph")
-spread_pixels = 0.0
-center_dot = false
-foreground_color = Color(0.18000486, 0.18000486, 0.18000486, 1)
-outline_color = Color(0, 0, 0, 0)
-metadata/_custom_type_script = "uid://cgovebj66dsyy"
+[connection signal="block_broken" from="Player" to="." method="_on_player_block_broken"]
+[connection signal="block_placed" from="Player" to="." method="_on_player_block_placed"]
+[connection signal="block_loaded" from="VoxelTerrain" to="." method="_on_voxel_terrain_block_loaded"]
