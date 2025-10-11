@@ -2,6 +2,7 @@ class_name Player
 extends CharacterBody3D
 
 signal block_placed(where: Vector3i, what: int)
+signal block_broken(where: Vector3i, what: int)
 
 const SPRINT_FOV_MULT: float = 0.3
 const SPRINT_SPEED_MULT: float = 0.3
@@ -47,6 +48,29 @@ var bob_amount: float = 0.0
 
 @onready var block_highlight: MeshInstance3D = MeshInstance3D.new()
 
+var current_block: int = 4
+func get_current_block_texture() -> Texture2D:
+	var tex := (terrain.material_override as StandardMaterial3D).albedo_texture
+
+	var mesher := terrain.mesher as VoxelMesherBlocky
+	var library := mesher.library as VoxelBlockyLibrary
+	if current_block >= library.models.size() or current_block < 0: return null
+
+	var block := library.models[current_block]
+	var atlas: AtlasTexture = null
+
+	if block is VoxelBlockyModelCube:
+		var cube := block as VoxelBlockyModelCube
+		var tile: Vector2 = cube.get_tile(5) * cube.atlas_size_in_tiles
+		atlas = AtlasTexture.new()
+		atlas.atlas = tex
+		atlas.region = Rect2(tile, Vector2.ONE * 16)
+
+	$CanvasLayer/Label.text = ["Air", "Grass", "Dirt", "Water", "Machine"][current_block] + (" (%s)" % current_block)
+		
+	return atlas
+
+
 func setup_hightlight() -> void:
 	var mat := ShaderMaterial.new()
 	mat.shader = preload("res://outline.gdshader")
@@ -71,6 +95,13 @@ func _unhandled_input(event: InputEvent) -> void:
 	if Input.is_action_just_pressed(&"exit"):
 		release_mouse()
 
+	if Input.is_action_just_pressed(&"fly_down"):
+		current_block -= 1
+		$CanvasLayer/TextureRect.texture = get_current_block_texture()
+	elif Input.is_action_just_pressed(&"fly_up"):
+		current_block += 1
+		$CanvasLayer/TextureRect.texture = get_current_block_texture()
+
 func _camera_bob(delta: float) -> void:
 	var _mult := WALK_BOB_MULT if not sprinting else SPRINT_BOB_MULT
 	# var _speed := WALK_BOB_SPEED if not sprinting else SPRINT_BOB_SPEED
@@ -87,16 +118,17 @@ func _camera_bob(delta: float) -> void:
 func _break_blocks(target_pos: Vector3i) -> void:
 	if Input.is_action_just_pressed(&"break"):
 		voxel_tool.mode = VoxelTool.MODE_REMOVE
+		var bid := voxel_tool.get_voxel(target_pos)
 		voxel_tool.do_point(target_pos)
-		block_placed.emit(target_pos, 0)
+		block_broken.emit(target_pos, bid)
 
 # var firstpos: Vector3i
 func _place_blocks(target_pos: Vector3i, normal: Vector3) -> void:
 	if Input.is_action_just_pressed(&"interact"):
 		var target_space := target_pos + Vector3i(normal)
 		voxel_tool.mode = VoxelTool.MODE_ADD
-		voxel_tool.set_voxel(target_space, 4)
-		block_placed.emit(target_space, 4)
+		voxel_tool.set_voxel(target_space, current_block)
+		block_placed.emit(target_space, current_block)
 		# if not firstpos:
 		# 	firstpos = target_space
 		# 	print('Firstpos', firstpos)
