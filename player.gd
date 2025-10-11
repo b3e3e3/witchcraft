@@ -1,6 +1,8 @@
 class_name Player
 extends CharacterBody3D
 
+signal block_placed(where: Vector3i, what: int)
+
 const SPRINT_FOV_MULT: float = 0.3
 const SPRINT_SPEED_MULT: float = 0.3
 const SPRINT_BOB_MULT: Vector2 = Vector2(0, 0.08)
@@ -32,10 +34,10 @@ var sprint_vel: Vector3
 var grav_vel: Vector3
 var jump_vel: Vector3
 
-# #region voxels
-# @onready var terrain: VoxelTerrain = $"../VoxelTerrain"
-# @onready var voxel_tool = terrain.get_voxel_tool()
-# #endregion
+#region voxels
+@onready var terrain: VoxelTerrain = $"../VoxelTerrain"
+@onready var voxel_tool = terrain.get_voxel_tool()
+#endregion
 
 @onready var camera: Camera3D = $Camera
 @onready var camera_base_fov: float = camera.fov
@@ -82,16 +84,38 @@ func _camera_bob(delta: float) -> void:
 	camera.v_offset = _target_v * bob_amount
 	camera.h_offset = _target_h * bob_amount
 
-# func _break_blocks(target_pos: Vector3i) -> void:
-# 	if Input.is_action_just_pressed(&"break"):
-# 		voxel_tool.mode = VoxelTool.MODE_REMOVE
-# 		voxel_tool.do_point(target_pos)
+func _break_blocks(target_pos: Vector3i) -> void:
+	if Input.is_action_just_pressed(&"break"):
+		voxel_tool.mode = VoxelTool.MODE_REMOVE
+		voxel_tool.do_point(target_pos)
+		block_placed.emit(target_pos, 0)
 
-# func _place_blocks(target_pos: Vector3i, normal: Vector3) -> void:
-# 	if Input.is_action_just_pressed(&"interact"):
-# 		voxel_tool.mode = VoxelTool.MODE_ADD
-# 		print("add")
-# 		voxel_tool.set_voxel(target_pos + Vector3i(normal), 1)
+# var firstpos: Vector3i
+func _place_blocks(target_pos: Vector3i, normal: Vector3) -> void:
+	if Input.is_action_just_pressed(&"interact"):
+		var target_space := target_pos + Vector3i(normal)
+		voxel_tool.mode = VoxelTool.MODE_ADD
+		print("add")
+		voxel_tool.set_voxel(target_space, 4)
+		block_placed.emit(target_space, 4)
+		# if not firstpos:
+		# 	firstpos = target_space
+		# 	print('Firstpos', firstpos)
+		# else:
+		# 	match -(firstpos-target_space):
+		# 		Vector3i.LEFT:
+		# 			print("Left")
+		# 		Vector3i.RIGHT:
+		# 			print("Right")
+		# 		Vector3i.UP:
+		# 			print("Top")
+		# 		Vector3i.DOWN:
+		# 			print("Bottom")
+		# 		Vector3i.FORWARD:
+		# 			print("Front")
+		# 		Vector3i.BACK:
+		# 			print("Back")
+		
 
 func _hightlight_blocks(rc: VoxelRaycastResult):
 	if rc:
@@ -110,14 +134,14 @@ func _input(event: InputEvent) -> void:
 
 		var result = space_state.intersect_ray(query)
 
-func _process(delta: float) -> void: pass
-# 	var rc := voxel_tool.raycast(camera.global_position, -camera.global_basis.z, 5.0)
-# 	_hightlight_blocks(rc)
-# 	if rc:
-# 		var target_pos := rc.position
+func _process(delta: float) -> void:
+	var rc := voxel_tool.raycast(camera.global_position, -camera.global_basis.z, 5.0)
+	_hightlight_blocks(rc)
+	if rc:
+		var target_pos := rc.position
 
-# 		_break_blocks(target_pos)
-# 		_place_blocks(target_pos, rc.normal)
+		_break_blocks(target_pos)
+		_place_blocks(target_pos, rc.normal)
 		
 func _wait_for_fly() -> void:
 	await get_tree().create_timer(0.3).timeout
