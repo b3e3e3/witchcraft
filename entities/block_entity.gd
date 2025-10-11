@@ -5,14 +5,29 @@ func on_ready() -> void:
 	if has_component(BlockTransformComponent):
 		var transform := get_component(BlockTransformComponent) as BlockTransformComponent
 		var adjacent := find_adjacent_blocks(transform.position)
-		
-		var tarnation := [4, 5]
 
 		for pos in adjacent:
 			var bid := adjacent[pos]
 			# TODO: hack
-			if bid in tarnation:
+			if bid in [4, 5]:
 				print("Found adjacent machine/cable at %s" % pos)
+
+		if has_component(MachineComponent):
+			var statuslabel := Label3D.new()
+			var itemlabel := Label3D.new()
+			
+			add_child(statuslabel)
+			add_child(itemlabel)
+
+			statuslabel.global_position = Vector3(transform.position) + Vector3(0.6, 2, 0.5)
+			statuslabel.pixel_size = 0.01
+			statuslabel.text = "StatusLabel"
+			statuslabel.name = "StatusLabel"
+
+			itemlabel.global_position = Vector3(transform.position) + Vector3(0.6, 0.5, 1.5)
+			itemlabel.pixel_size = 0.01
+			itemlabel.text = "Itemlabel"
+			itemlabel.name = "ItemLabel"
 
 func find_adjacent_blocks(pos: Vector3i) -> Dictionary[Vector3i, int]:
 	var adjacent: Dictionary[Vector3i, int]

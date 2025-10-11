@@ -1,52 +1,52 @@
-class_name Machine
+# class_name Machine
 extends Node
 
 signal world_tick
 signal operate_tick
 signal io_tick
 
-@export var voxel_pos: Vector3i
+# @export var voxel_pos: Vector3i
 
 var tick_count: int = 0
 
 const OPERATE_TICK_LENGTH: int = 96
 const IO_TICK_LENGTH: int = 72
 
-enum State {
-	IDLE,
-	ACTIVE,
-}
-var state := State.IDLE
+# enum State {
+# 	IDLE,
+# 	ACTIVE,
+# }
+# var state := State.IDLE
 
-enum Action {
-	OPERATE = 0b0001,
-	INPUT = 0b0010,
-	OUTPUT = 0b0100,
-}
+# enum Action {
+# 	OPERATE = 0b0001,
+# 	INPUT = 0b0010,
+# 	OUTPUT = 0b0100,
+# }
 
-var actions: int = 0
+# var actions: int = 0
 
-class Item:
-	var name: String = "Item"
+# class Item:
+# 	var name: String = "Item"
 
-var input_items: Array[Item] = []
-var output_items: Array[Item] = []
+# var input_items: Array[Item] = []
+# var output_items: Array[Item] = []
 
-@onready var label: Label3D = $Label3D
+# @onready var label: Label3D = $Label3D
 
 @export var connections: Dictionary[Global.BlockSide, Machine] = {}
 
-func _init(voxeL_pos: Vector3i) -> void:
-	self.voxel_pos = voxel_pos
+# func _init(voxeL_pos: Vector3i) -> void:
+# 	self.voxel_pos = voxel_pos
 
-func ensure_action(action: Action) -> void:
-	if not actions & action: actions ^= action
+# func ensure_action(action: Action) -> void:
+# 	if not actions & action: actions ^= action
 
-func has_action(action: Action) -> bool:
-	return actions & action
+# func has_action(action: Action) -> bool:
+# 	return actions & action
 
-func remove_action(action: Action) -> void:
-	if actions & action: actions &= ~action
+# func remove_action(action: Action) -> void:
+# 	if actions & action: actions &= ~action
 
 #region tick hooks
 func _on_world_tick() -> void:

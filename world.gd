@@ -28,7 +28,8 @@ func _on_player_block_placed(where: Vector3i, what: int) -> void:
 	# create entity?
 	var block := BlockEntity.new()
 	block.add_components([
-		BlockTransformComponent.new(where)
+		BlockTransformComponent.new(where),
+		MachineComponent.new()
 	])
 	add_child(block)
 	ECS.world.add_entity(block)
