@@ -4,6 +4,3 @@
 [submodule "modules/voxel"]
 	path = modules/voxel
 	url = git@github.com:Zylann/godot_voxel.git
-[submodule "project"]
-	path = project
-	url = ./project
