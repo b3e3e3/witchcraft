@@ -1,0 +1,9 @@
+[submodule "godot"]
+	path = godot
+	url = git@github.com:godotengine/godot.git
+[submodule "godex"]
+	path = modules/godex
+	url = git@github.com:GodotECS/godex.git
+[submodule "modules/godot_voxel"]
+	path = modules/godot_voxel
+	url = git@github.com:Zylann/godot_voxel.git
