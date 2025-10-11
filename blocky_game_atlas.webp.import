@@ -3,20 +3,19 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://butf25gugdodk"
-path.s3tc="res://.godot/imported/blocky_game_atlas.webp-aa4a7bf0424ced14ddb4e0a3548a39f2.s3tc.ctex"
+path="res://.godot/imported/blocky_game_atlas.webp-aa4a7bf0424ced14ddb4e0a3548a39f2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
-"vram_texture": true
+"vram_texture": false
 }
 
 [deps]
 
 source_file="res://blocky_game_atlas.webp"
-dest_files=["res://.godot/imported/blocky_game_atlas.webp-aa4a7bf0424ced14ddb4e0a3548a39f2.s3tc.ctex"]
+dest_files=["res://.godot/imported/blocky_game_atlas.webp-aa4a7bf0424ced14ddb4e0a3548a39f2.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=3
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
