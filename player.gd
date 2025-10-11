@@ -95,7 +95,6 @@ func _place_blocks(target_pos: Vector3i, normal: Vector3) -> void:
 	if Input.is_action_just_pressed(&"interact"):
 		var target_space := target_pos + Vector3i(normal)
 		voxel_tool.mode = VoxelTool.MODE_ADD
-		print("add")
 		voxel_tool.set_voxel(target_space, 4)
 		block_placed.emit(target_space, 4)
 		# if not firstpos:

@@ -1,9 +1,11 @@
 class_name Machine
-extends StaticBody3D
+extends Node
 
 signal world_tick
 signal operate_tick
 signal io_tick
+
+@export var voxel_pos: Vector3i
 
 var tick_count: int = 0
 
@@ -33,6 +35,9 @@ var output_items: Array[Item] = []
 @onready var label: Label3D = $Label3D
 
 @export var connections: Dictionary[Global.BlockSide, Machine] = {}
+
+func _init(voxeL_pos: Vector3i) -> void:
+	self.voxel_pos = voxel_pos
 
 func ensure_action(action: Action) -> void:
 	if not actions & action: actions ^= action
