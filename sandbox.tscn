@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://dg8il80lvwpit"]
+[gd_scene load_steps=23 format=3 uid="uid://dg8il80lvwpit"]
 
 [ext_resource type="Script" uid="uid://dfhrcnpf2ev8g" path="res://world.gd" id="1_rvmsc"]
 [ext_resource type="Texture2D" uid="uid://butf25gugdodk" path="res://blocky_game_atlas.webp" id="2_p7lbm"]
@@ -7,6 +7,8 @@
 [ext_resource type="VoxelBlockyModelCube" uid="uid://c2krob74pbsuh" path="res://blocks/machine.tres" id="4_rjrbw"]
 [ext_resource type="VoxelBlockyModelCube" uid="uid://s6f3aku07hlp" path="res://blocks/cable.tres" id="5_ypj6x"]
 [ext_resource type="Script" uid="uid://cdu5tlyk72uu4" path="res://addons/gecs/world.gd" id="7_44b12"]
+[ext_resource type="Script" uid="uid://ds28wm4vguxep" path="res://systems/machine_system.gd" id="8_igx0j"]
+[ext_resource type="Script" uid="uid://juy3ncjbvhoa" path="res://observers/block_observer.gd" id="9_tctsc"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_cojph"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -84,8 +86,21 @@ run_stream_in_editor = false
 
 [node name="World" type="Node" parent="."]
 script = ExtResource("7_44b12")
+system_nodes_root = NodePath("Systems")
 metadata/_custom_type_script = "uid://cdu5tlyk72uu4"
 
+[node name="Systems" type="Node" parent="World"]
+
+[node name="BlockObserver" type="Node" parent="World/Systems"]
+script = ExtResource("9_tctsc")
+metadata/_custom_type_script = "uid://juy3ncjbvhoa"
+
+[node name="MachineSystem" type="Node" parent="World/Systems"]
+script = ExtResource("8_igx0j")
+metadata/_custom_type_script = "uid://ds28wm4vguxep"
+
 [connection signal="block_broken" from="Player" to="." method="_on_player_block_broken"]
+[connection signal="block_broken" from="Player" to="World/Systems/BlockObserver" method="_on_player_block_broken"]
 [connection signal="block_placed" from="Player" to="." method="_on_player_block_placed"]
+[connection signal="block_placed" from="Player" to="World/Systems/BlockObserver" method="_on_player_block_placed"]
 [connection signal="block_loaded" from="VoxelTerrain" to="." method="_on_voxel_terrain_block_loaded"]
