@@ -1,41 +1,32 @@
 class_name BlockEntity
 extends Entity
 
-func on_ready() -> void:
-	if has_component(BlockTransformComponent):
-		var transform := get_component(BlockTransformComponent) as BlockTransformComponent
-		var adjacent := find_adjacent_blocks(transform.position)
+var position: Vector3i
 
-		for pos in adjacent:
-			var bid := adjacent[pos]
-			# TODO: hack
-			if bid in [4, 5]:
-				print("Found adjacent machine/cable at %s" % pos)
+func define_components() -> Array:
+	return [
+		BlockTransformComponent.new()
+	]
 
-		if has_component(MachineComponent):
-			var statuslabel := Label3D.new()
-			var itemlabel := Label3D.new()
-			
-			add_child(statuslabel)
-			add_child(itemlabel)
+func find_adjacent_blocks(pos: Vector3i) -> Array[BlockEntity]:
+	var adjacent: Array[BlockEntity]
 
-			statuslabel.global_position = Vector3(transform.position) + Vector3(0.6, 2, 0.5)
-			statuslabel.pixel_size = 0.01
-			statuslabel.text = "StatusLabel"
-			statuslabel.name = "StatusLabel"
+	for block_pos in find_adjacent_voxels(pos):
+		var metadata = Global.voxel_tool.get_voxel_metadata(block_pos)
+		if metadata is BlockEntity:
+			var block := metadata as BlockEntity
+			print("Found block entity at %s" % block_pos)
+			adjacent.append(block)
 
-			itemlabel.global_position = Vector3(transform.position) + Vector3(0.6, 0.5, 1.5)
-			itemlabel.pixel_size = 0.01
-			itemlabel.text = "Itemlabel"
-			itemlabel.name = "ItemLabel"
+	return adjacent
 
-func find_adjacent_blocks(pos: Vector3i) -> Dictionary[Vector3i, int]:
+func find_adjacent_voxels(pos: Vector3i) -> Dictionary[Vector3i, int]:
 	var adjacent: Dictionary[Vector3i, int]
 	
 	var dirs := [Vector3i.LEFT, Vector3i.RIGHT, Vector3i.UP, Vector3i.DOWN, Vector3i.FORWARD, Vector3i.BACK]
 	
 	for dir in dirs:
-		var bloc := Global.current_terrain.get_voxel_tool().get_voxel(pos+dir)
-		adjacent[pos+dir] = bloc
+		var block := Global.voxel_tool.get_voxel(pos+dir)
+		adjacent[pos+dir] = block
 	
 	return adjacent

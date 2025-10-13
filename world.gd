@@ -8,34 +8,45 @@ const WorldGenerator = preload("res://world_generator.gd")
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	terrain.generator = WorldGenerator.new()
 	Global.current_terrain = terrain
 
-	# ecs setup
 	ECS.world = world
 
+	# ecs systems
 	ECS.world.add_system(MachineSystem.new())
 
-	terrain.generator = WorldGenerator.new()
+	# ecs observers
+	ECS.world.add_observer(BlockObserver.new())
 
 func _process(delta):
 	if ECS.world:
 		ECS.process(delta)
 
 func _on_player_block_placed(where: Vector3i, what: int) -> void:
+	# TODO: associate block IDs with an entity class, maybe some kind of lookup table of references that can autofill the blocklibrary?
 	var tarnation := [4, 5]
 	if not what in tarnation: return
 
 	# create entity?
-	var block := BlockEntity.new()
-	block.add_components([
-		BlockTransformComponent.new(where),
-		MachineComponent.new()
-	])
+	var block := MachineEntity.new()
+	block.position = where
+	# var block_tsf := block.get_component(BlockTransformComponent) as BlockTransformComponent
+
 	add_child(block)
-	ECS.world.add_entity(block)
-	print("Created block entity at %s" % [where])
 
 	terrain.get_voxel_tool().set_voxel_metadata(where, block)
+
+	ECS.world.add_entity(block)
+	print("Created block entity at %s" % [where])
+	
+	# TODO: bug found in GECS?
+	# Entity.on_ready() does NOT fire after waiting for component_added
+	# all the stuff like add child, set metadata, etc., were all happening AFTER the await before
+	# but now, they are before to make sure Entity.on_ready() fires. why??
+	# await block.component_added
+
+	# block_tsf.position = where
 
 
 func _on_player_block_broken(where: Vector3i, what: int) -> void:

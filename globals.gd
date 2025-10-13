@@ -22,6 +22,10 @@ enum MachineState {
 }
 #endregion
 
+var voxel_tool: VoxelTool:
+	get:
+		return current_terrain.get_voxel_tool() if current_terrain else null
+
 var current_terrain: VoxelTerrain
 
 func get_enum_key(value: Variant, _enum):
