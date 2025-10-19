@@ -2,6 +2,7 @@
 class_name BlockData
 extends Resource
 
+@export var uuid: StringName = "base:new_block"
 @export var name := "Block"
 @export var description := "A basic block"
 

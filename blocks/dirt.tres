@@ -1,10 +1,17 @@
-[gd_resource type="Resource" script_class="BlockData" load_steps=3 format=3 uid="uid://vslnhyumalgm"]
+[gd_resource type="Resource" script_class="BlockData" load_steps=4 format=3 uid="uid://vslnhyumalgm"]
 
 [ext_resource type="Script" uid="uid://ce2bs0pkj867w" path="res://blocks/block_data.gd" id="1_tisec"]
+[ext_resource type="Texture2D" uid="uid://bo0phl1mu7v42" path="res://textures/blocks/dirt_block.png" id="2_751gq"]
 
 [sub_resource type="VoxelBlockyModelCube" id="VoxelBlockyModelCube_tisec"]
 
 [resource]
 script = ExtResource("1_tisec")
+uuid = &"dirt_block"
+name = "Dirt Block"
+description = "It's dirt"
 model = SubResource("VoxelBlockyModelCube_tisec")
+textures = Dictionary[int, Texture2D]({
+2: ExtResource("2_751gq")
+})
 metadata/_custom_type_script = "uid://ce2bs0pkj867w"

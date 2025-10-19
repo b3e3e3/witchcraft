@@ -1,7 +1,16 @@
 @tool
 extends EditorInspectorPlugin
 
-static var block_path: String = "res://blocks"
+const block_path: String = "res://blocks"
+
+func _can_handle(object: Object) -> bool:
+	return object is VoxelTerrain
+
+func _parse_begin(object: Object) -> void:
+	var button = Button.new()
+	button.text = "Build Block Library from Atlas"
+	button.connect("pressed", Callable(self, "update_block_library").bind(object))
+	add_custom_control(button)
 
 static func get_all_blocks(path: String = block_path) -> Array[BlockData]:
 	var blocks: Array[BlockData] = []
@@ -27,49 +36,170 @@ static func get_all_blocks(path: String = block_path) -> Array[BlockData]:
 		file_name = dir.get_next()
 	return blocks
 
-static func stitch_atlas(tex_w: int = 16, tex_h: int = 16) -> AtlasTexture:
+static func stitch_atlas(path: String = "res://atlas.png", tex_w: int = 16, tex_h: int = 16) -> AtlasTexture:
 	var blocks: Array[BlockData] = get_all_blocks()
 	print("Blocks: %s" % blocks.size())
 
 	var atlas := AtlasTexture.new()
 
-	var atlas_w: int = 1 + ceil(blocks.size() / 2)
-	var atlas_h: int = 1 + ceil(blocks.size() / 2)
+	var tex_count := 0
+	for block in blocks:
+		tex_count += block.textures.size()
 
-	print("Atlas size: %s x %s" % [atlas_w, atlas_h])
+	assert(tex_count > 0, "No textures found")
 
-	var image_w: int = atlas_w * tex_w
-	var image_h: int = atlas_h * tex_h
+	var atlas_w: int = 2 + ceil(tex_count / 2)
+	var atlas_h: int = 2 + ceil(tex_count / 2)
+
+	var image_w: int = atlas_w * (tex_w)
+	var image_h: int = atlas_h * (tex_h)
+	print("Image size: %s x %s (%s x %s)" % [image_w, image_h, atlas_w, atlas_h])
 
 	var image := Image.create(image_w, image_h, true, Image.FORMAT_RGBA8)
 	image.fill(Color.HOT_PINK)#TRANSPARENT)
 
-	var last_px := 0
-	var last_py := 0
+	var atlas_json := {
+		"uuid": "atlas",
+		"texture_size": [tex_w, tex_h],
+		"textures": [],
+		"size": [atlas_w, atlas_h],
+	}
+
+	var next_px := 0
+	var next_py := 0
+
+	var images: Array[Image] = []
 
 	print("Creating atlas")
 	for block in blocks:
 		for side in block.textures:
 			var tex := block.textures[side]
+			var tex_already_exists := false
+			for t in atlas_json["textures"]:
+				if t["texture"] == tex.resource_path:
+					print("Texture already exists in atlas")
+					tex_already_exists = true
+					next_px = t["position"][0]
+					next_py = t["position"][1]
+					continue
+
 			var img := tex.get_image()
+
+			assert(img.get_width() == tex_w and img.get_height() == tex_h, "Block (%s) texture size mismatch" % block.uuid)
+
 
 			var w := img.get_width()
 			var h := img.get_height()
 			print("Found image. Size: %s x %s" % [w, h])
 
-			var x := last_px + tex_w
-			var y := last_py + tex_h
+			var block_json := {
+				"uuid": block.uuid,
+				"side": side,
+				"texture": tex.resource_path,
+				"position": [next_px, next_py],
+				# "size": [w, h]
+			}
+
+			atlas_json["textures"].append(block_json)
+			print("Added %s to atlas JSON" % block.uuid)
+
+			var x := next_px * tex_w
+			var y := next_py * tex_h
 			print("Placing image at %s x %s" % [x, y])
 
-			last_px = x + w
-			last_py = y + h
-			print("Updated last position to %s x %s" % [last_px, last_py])
-
-			for i in range(w):
-				for j in range(h):
-					print("Setting pixel at %s x %s" % [x + i, y + j])
+			for i in range(tex_w):
+				for j in range(tex_h):
+					# avoid placing textures diagonally
 					image.set_pixel(x + i, y + j, img.get_pixel(i, j))
 
-	image.save_png("res://atlas.png")
+			if next_px < atlas_w:
+				next_px += 1
+			elif next_py < atlas_h:
+				next_py += 1
+				next_px = 0
+
+			print("Done. Updated next position to %s x %s" % [next_px, next_py])
+
+	var editor_filesystem := EditorInterface.get_resource_filesystem()
+
+	var file = FileAccess.open("res://atlas.json", FileAccess.WRITE)
+	if file:
+		if file.store_string(JSON.stringify(atlas_json)):
+			editor_filesystem.reimport_files(["res://atlas.json"])
+			print("Reimported atlas json")
+		file.close()
+	else:
+		print("Error opening file for writing.")
+
+	if image.save_png(path) == Error.OK:
+		editor_filesystem.reimport_files([path])
+		print("Reimported atlas png")
 
 	return atlas
+
+static func update_block_library(terrain: VoxelTerrain):
+	var generator := terrain.generator
+	var mesher := terrain.mesher
+	print("Got mesher from terrain generator")
+	if mesher is VoxelMesherBlocky:
+		var voxel_mesher := mesher as VoxelMesherBlocky
+		var library := voxel_mesher.library as VoxelBlockyLibrary
+		var blocks := get_all_blocks()
+
+		print("Got %s block(s)" % blocks.size())
+
+		for block in blocks:
+			var model = block.model
+			if not model: continue
+
+			if model is VoxelBlockyModelCube:
+				var sides: Dictionary[Global.BlockSide, StringName] = {
+					Global.BlockSide.LEFT: "tile_left",
+					Global.BlockSide.RIGHT: "tile_right",
+					Global.BlockSide.TOP: "tile_top",
+					Global.BlockSide.BOTTOM: "tile_bottom",
+					Global.BlockSide.FRONT: "tile_front",
+					Global.BlockSide.BACK: "tile_back"
+				}
+
+				model.atlas_size_in_tiles = TEMP_get_atlas_size_in_tiles()
+
+				var front := TEMP_find_block(block.uuid, Global.BlockSide.FRONT)
+
+				for side in sides:
+					model[sides[side]].x = front["position"][0]
+					model[sides[side]].y = front["position"][1]
+
+					if block.textures.has(side):
+						var tex := TEMP_find_block(block.uuid, side)
+						model[sides[side]].x = tex["position"][0]
+						model[sides[side]].y = tex["position"][1]
+
+			library.add_model(model)
+
+static func TEMP_get_atlas_size_in_tiles() -> Vector2:
+	var file := FileAccess.open("res://atlas.json", FileAccess.READ)
+	var json := JSON.new()
+	if json.parse(file.get_as_text()) == Error.OK:
+		var data := json.data
+		var atlas_size = data["size"]
+		return Vector2(atlas_size[0], atlas_size[1])
+	file.close()
+
+	return Vector2(0, 0)
+
+static func TEMP_find_block(uuid: StringName, side: Global.BlockSide, path: String = "res://atlas.json") -> Dictionary:
+	var file := FileAccess.open(path, FileAccess.READ)
+	var json := JSON.new()
+	if json.parse(file.get_as_text()) == Error.OK:
+		var data := json.data
+		var textures = data["textures"] as Array
+		# print(textures)
+		var found_texs = textures.filter(func(texture):
+			# print(texture)
+			return texture["uuid"] == uuid and int(texture["side"]) == side
+		)
+		return found_texs[0] if found_texs.size() > 0 else {}
+	file.close()
+
+	return {}

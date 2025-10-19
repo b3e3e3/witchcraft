@@ -1,3 +1,4 @@
+class_name GameWorld
 extends Node3D
 
 const WorldGenerator = preload("res://world_generator.gd")
@@ -13,8 +14,7 @@ func _ready() -> void:
 
 	ECS.world = world
 
-func _process(delta):
-	if ECS.world:
+func _process(delta):if ECS.world:
 		ECS.process(delta)
 
 # func _on_player_block_placed(where: Vector3i, what: int) -> void:
@@ -25,4 +25,3 @@ func _process(delta):
 	# await block.component_added
 
 	# block_tsf.position = where
-
