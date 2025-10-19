@@ -1,7 +1,26 @@
-class_name AtlasService
+# class_name AtlasService
 extends Node
 
-static func get_size_in_tiles(path: String = "res://atlas.json") -> Vector2:
+const library_json_path: String = "res://library.json"
+
+var block_indexes: Dictionary[StringName, int]
+
+func _ready() -> void:
+	# open json file
+	var file := FileAccess.open(library_json_path, FileAccess.READ)
+	var json := JSON.new()
+	if json.parse(file.get_as_text()) == Error.OK:
+		var data = json.data
+		file.close()
+
+		var blocks = data["blocks"] as Array
+		for i in range(blocks.size()):
+			var b = blocks[i]
+			block_indexes[b["uuid"]] = i
+
+		print("INDEXES\n", block_indexes)
+
+func get_size_in_tiles(path: String = "res://atlas.json") -> Vector2:
 	var file := FileAccess.open(path, FileAccess.READ)
 	var json := JSON.new()
 	if json.parse(file.get_as_text()) == Error.OK:
@@ -12,23 +31,10 @@ static func get_size_in_tiles(path: String = "res://atlas.json") -> Vector2:
 
 	return Vector2(0, 0)
 
-static func get_block_library_index(uuid: StringName, library: VoxelBlockyLibrary, library_json_path: String = "res://library.json") -> int:
-	# open json file
-	var file := FileAccess.open(library_json_path, FileAccess.READ)
-	var json := JSON.new()
-	if json.parse(file.get_as_text()) == Error.OK:
-		var data = json.data
-		file.close()
+func get_block_library_index(uuid: StringName) -> int:
+	return block_indexes[uuid] if block_indexes.has(uuid) else -1
 
-		var blocks = data["blocks"] as Array
-		# print(blocks)
-		return blocks.find_custom(func(block):
-			return block["uuid"] == uuid
-		)
-
-	return 0
-
-static func get_block_side_texture(uuid: StringName, side: Global.BlockSide, path: String = "res://atlas.json") -> Dictionary:
+func get_block_side_texture(uuid: StringName, side: Global.BlockSide, path: String = "res://atlas.json") -> Dictionary:
 	var file := FileAccess.open(path, FileAccess.READ)
 	var json := JSON.new()
 	if json.parse(file.get_as_text()) == Error.OK:

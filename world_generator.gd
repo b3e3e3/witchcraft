@@ -4,22 +4,10 @@ const channel: int = VoxelBuffer.CHANNEL_TYPE
 
 const SQUASH = 16
 
-var AIR: int
-var GRASS: int
-var DIRT: int
-var WATER: int
-
 var FN: ZN_FastNoiseLite = ZN_FastNoiseLite.new()
 
 func _get_used_channels_mask() -> int:
 	return 1 << channel
-
-func _init(terrain: VoxelTerrain) -> void:
-	var lib = terrain.mesher.library
-	AIR = AtlasService.get_block_library_index(&"air", lib)
-	GRASS = AtlasService.get_block_library_index(&"grass", lib)
-	DIRT = AtlasService.get_block_library_index(&"dirt", lib)
-	WATER = AtlasService.get_block_library_index(&"water", lib)
 
 func generate_elevation(scale, origin, x, y, z) -> float:
 	var coord_scale := 0.03
@@ -40,9 +28,9 @@ func _generate_block(buffer: VoxelBuffer, origin: Vector3i, lod: int) -> void:
 	if lod != 0:
 		return
 
-	# FN.fractal_octaves = 3
+	FN.fractal_octaves = 3
 
-	buffer.fill(AIR)
+	buffer.fill(AtlasService.get_block_library_index(&"air"))
 	# BaseGen.generate_block(buffer, origin, lod)
 
 	var base_height := 0.0
@@ -67,8 +55,8 @@ func _generate_block(buffer: VoxelBuffer, origin: Vector3i, lod: int) -> void:
 				# depth *= elev_noise - (scale/2)
 				if depth <= (origin.y + y):
 					if origin.y + y < 0:
-						buffer.set_voxel(WATER, x, y, z)
-					else:
-						buffer.set_voxel(AIR, x, y, z)
+						buffer.set_voxel(AtlasService.get_block_library_index(&"water"), x, y, z)
+					# else:
+					# 	buffer.set_voxel(AtlasService.get_block_library_index(&"air"), x, y, z)
 				else:
-					buffer.set_voxel(DIRT, x, y, z)
+					buffer.set_voxel(AtlasService.get_block_library_index(&"dirt"), x, y, z)

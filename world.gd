@@ -10,7 +10,7 @@ const WorldGenerator = preload("res://world_generator.gd")
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	Global.current_terrain = terrain
-	terrain.generator = WorldGenerator.new(terrain)
+	terrain.generator = WorldGenerator.new()
 
 	ECS.world = world
 
