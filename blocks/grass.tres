@@ -6,15 +6,16 @@
 [ext_resource type="Texture2D" uid="uid://clqukb5jsh7yk" path="res://textures/blocks/grass_block_sides.png" id="4_2p00a"]
 
 [sub_resource type="VoxelBlockyModelCube" id="VoxelBlockyModelCube_l34sj"]
-tile_left = Vector2i(2, 0)
-tile_right = Vector2i(2, 0)
+atlas_size_in_tiles = Vector2i(4, 4)
+tile_left = Vector2i(1, 0)
+tile_right = Vector2i(1, 0)
 tile_top = Vector2i(2, 0)
-tile_back = Vector2i(2, 0)
+tile_back = Vector2i(1, 0)
 tile_front = Vector2i(1, 0)
 
 [resource]
 script = ExtResource("1_nrr8s")
-uuid = &"grass_block"
+uuid = &"grass"
 name = "Grass Block"
 description = "It's grass"
 model = SubResource("VoxelBlockyModelCube_l34sj")

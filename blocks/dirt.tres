@@ -4,10 +4,11 @@
 [ext_resource type="Texture2D" uid="uid://bo0phl1mu7v42" path="res://textures/blocks/dirt_block.png" id="2_751gq"]
 
 [sub_resource type="VoxelBlockyModelCube" id="VoxelBlockyModelCube_tisec"]
+atlas_size_in_tiles = Vector2i(4, 4)
 
 [resource]
 script = ExtResource("1_tisec")
-uuid = &"dirt_block"
+uuid = &"dirt"
 name = "Dirt Block"
 description = "It's dirt"
 model = SubResource("VoxelBlockyModelCube_tisec")

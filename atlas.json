@@ -1,1 +1,58 @@
-{"size":[4,4],"texture_size":[16,16],"textures":[{"position":[0,0],"side":2,"texture":"res://textures/blocks/dirt_block.png","uuid":"dirt_block"},{"position":[0,0],"side":-4,"texture":"res://textures/blocks/dirt_block.png","uuid":"grass_block"},{"position":[1,0],"side":2,"texture":"res://textures/blocks/grass_block_sides.png","uuid":"grass_block"},{"position":[2,0],"side":3,"texture":"res://textures/blocks/grass_block_top.png","uuid":"grass_block"}],"uuid":"atlas"}
+{
+	"size": [
+		5.0,
+		5.0
+	],
+	"texture_size": [
+		16.0,
+		16.0
+	],
+	"textures": [
+		{
+			"position": [
+				0.0,
+				0.0
+			],
+			"side": 2.0,
+			"texture": "res://textures/blocks/dirt_block.png",
+			"uuid": "dirt"
+		},
+		{
+			"position": [
+				0.0,
+				0.0
+			],
+			"side": -4.0,
+			"texture": "res://textures/blocks/dirt_block.png",
+			"uuid": "grass"
+		},
+		{
+			"position": [
+				1.0,
+				0.0
+			],
+			"side": 2.0,
+			"texture": "res://textures/blocks/grass_block_sides.png",
+			"uuid": "grass"
+		},
+		{
+			"position": [
+				2.0,
+				0.0
+			],
+			"side": 3.0,
+			"texture": "res://textures/blocks/grass_block_top.png",
+			"uuid": "grass"
+		},
+		{
+			"position": [
+				3.0,
+				0.0
+			],
+			"side": 2.0,
+			"texture": "res://textures/blocks/water.png",
+			"uuid": "water"
+		}
+	],
+	"uuid": "atlas"
+}

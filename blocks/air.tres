@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BlockData" load_steps=3 format=3 uid="uid://vs1vk8j43rxj"]
+
+[ext_resource type="Script" uid="uid://ce2bs0pkj867w" path="res://blocks/block_data.gd" id="1_xvvux"]
+
+[sub_resource type="VoxelBlockyModelEmpty" id="VoxelBlockyModelEmpty_xvvux"]
+
+[resource]
+script = ExtResource("1_xvvux")
+uuid = &"air"
+name = "Air"
+description = "It's air"
+model = SubResource("VoxelBlockyModelEmpty_xvvux")
+textures = Dictionary[int, Texture2D]({})
+metadata/_custom_type_script = "uid://ce2bs0pkj867w"

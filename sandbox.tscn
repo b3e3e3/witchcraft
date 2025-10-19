@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://dg8il80lvwpit"]
+[gd_scene load_steps=22 format=3 uid="uid://dg8il80lvwpit"]
 
 [ext_resource type="Script" uid="uid://dfhrcnpf2ev8g" path="res://world.gd" id="1_rvmsc"]
 [ext_resource type="PackedScene" uid="uid://bxuo8t178ndey" path="res://player.tscn" id="2_rjrbw"]
@@ -25,24 +25,33 @@ glow_enabled = true
 [sub_resource type="VoxelGeneratorScript" id="VoxelGeneratorScript_igx0j"]
 script = ExtResource("3_rjrbw")
 
-[sub_resource type="VoxelBlockyModelEmpty" id="VoxelBlockyModelEmpty_p7lbm"]
+[sub_resource type="VoxelBlockyModelEmpty" id="VoxelBlockyModelEmpty_xvvux"]
 
 [sub_resource type="VoxelBlockyModelCube" id="VoxelBlockyModelCube_tisec"]
-atlas_size_in_tiles = Vector2i(4, 4)
+atlas_size_in_tiles = Vector2i(5, 5)
 
 [sub_resource type="VoxelBlockyModelCube" id="VoxelBlockyModelCube_l34sj"]
-atlas_size_in_tiles = Vector2i(4, 4)
+atlas_size_in_tiles = Vector2i(5, 5)
 tile_left = Vector2i(1, 0)
 tile_right = Vector2i(1, 0)
 tile_top = Vector2i(2, 0)
 tile_back = Vector2i(1, 0)
 tile_front = Vector2i(1, 0)
 
-[sub_resource type="VoxelBlockyLibrary" id="VoxelBlockyLibrary_rjrbw"]
-models = Array[VoxelBlockyModel]([SubResource("VoxelBlockyModelEmpty_p7lbm"), SubResource("VoxelBlockyModelCube_tisec"), SubResource("VoxelBlockyModelCube_l34sj")])
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0fpt2"]
+
+[sub_resource type="VoxelBlockyFluid" id="VoxelBlockyFluid_0fpt2"]
+material = SubResource("StandardMaterial3D_0fpt2")
+
+[sub_resource type="VoxelBlockyModelFluid" id="VoxelBlockyModelFluid_40bgd"]
+color = Color(0, 0.5176471, 1, 1)
+fluid = SubResource("VoxelBlockyFluid_0fpt2")
+
+[sub_resource type="VoxelBlockyLibrary" id="VoxelBlockyLibrary_0fpt2"]
+models = Array[VoxelBlockyModel]([SubResource("VoxelBlockyModelEmpty_xvvux"), SubResource("VoxelBlockyModelCube_tisec"), SubResource("VoxelBlockyModelCube_l34sj"), SubResource("VoxelBlockyModelFluid_40bgd")])
 
 [sub_resource type="VoxelMesherBlocky" id="VoxelMesherBlocky_ypj6x"]
-library = SubResource("VoxelBlockyLibrary_rjrbw")
+library = SubResource("VoxelBlockyLibrary_0fpt2")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_44b12"]
 vertex_color_use_as_albedo = true

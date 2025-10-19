@@ -1,0 +1,21 @@
+{
+	"blocks": [
+		{
+			"resource_path": "VoxelBlockyModelEmpty_xvvux",
+			"uuid": "air"
+		},
+		{
+			"resource_path": "VoxelBlockyModelCube_tisec",
+			"uuid": "dirt"
+		},
+		{
+			"resource_path": "VoxelBlockyModelCube_l34sj",
+			"uuid": "grass"
+		},
+		{
+			"resource_path": "VoxelBlockyModelFluid_40bgd",
+			"uuid": "water"
+		}
+	],
+	"version": 1.0
+}

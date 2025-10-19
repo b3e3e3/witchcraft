@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="BlockData" load_steps=6 format=3 uid="uid://e80lbkey0544"]
+
+[ext_resource type="Script" uid="uid://ce2bs0pkj867w" path="res://blocks/block_data.gd" id="1_40bgd"]
+[ext_resource type="Texture2D" uid="uid://o1s0ft7t5mgg" path="res://textures/blocks/water.png" id="2_n2t0g"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0fpt2"]
+
+[sub_resource type="VoxelBlockyFluid" id="VoxelBlockyFluid_0fpt2"]
+material = SubResource("StandardMaterial3D_0fpt2")
+
+[sub_resource type="VoxelBlockyModelFluid" id="VoxelBlockyModelFluid_40bgd"]
+fluid = SubResource("VoxelBlockyFluid_0fpt2")
+
+[resource]
+script = ExtResource("1_40bgd")
+uuid = &"water"
+name = "Water"
+description = "It's water"
+model = SubResource("VoxelBlockyModelFluid_40bgd")
+textures = Dictionary[int, Texture2D]({
+-4: null,
+-3: null,
+-2: null,
+1: null,
+2: ExtResource("2_n2t0g"),
+3: null
+})
+metadata/_custom_type_script = "uid://ce2bs0pkj867w"

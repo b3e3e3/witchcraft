@@ -48,11 +48,11 @@ static func stitch_atlas(path: String = "res://atlas.png", tex_w: int = 16, tex_
 
 	assert(tex_count > 0, "No textures found")
 
-	var atlas_w: int = 2 + ceil(tex_count / 2)
-	var atlas_h: int = 2 + ceil(tex_count / 2)
+	var atlas_w: int = ceil(tex_count / 2)
+	var atlas_h: int = ceil(tex_count / 2)
 
-	var image_w: int = atlas_w * (tex_w)
-	var image_h: int = atlas_h * (tex_h)
+	var image_w: int = atlas_w * tex_w
+	var image_h: int = atlas_h * tex_h
 	print("Image size: %s x %s (%s x %s)" % [image_w, image_h, atlas_w, atlas_h])
 
 	var image := Image.create(image_w, image_h, true, Image.FORMAT_RGBA8)
@@ -74,8 +74,11 @@ static func stitch_atlas(path: String = "res://atlas.png", tex_w: int = 16, tex_
 	for block in blocks:
 		for side in block.textures:
 			var tex := block.textures[side]
+			if tex == null: continue
 			var tex_already_exists := false
 			for t in atlas_json["textures"]:
+				print(t)
+				print(tex.resource_path)
 				if t["texture"] == tex.resource_path:
 					print("Texture already exists in atlas")
 					tex_already_exists = true
@@ -146,11 +149,23 @@ static func update_block_library(terrain: VoxelTerrain):
 		var library := voxel_mesher.library as VoxelBlockyLibrary
 		var blocks := get_all_blocks()
 
+		library.models = []
+
 		print("Got %s block(s)" % blocks.size())
+
+		var library_json := {
+			"version": 1,
+			"blocks": []
+		}
 
 		for block in blocks:
 			var model = block.model
 			if not model: continue
+
+			library_json["blocks"].append({
+				"uuid": block.uuid,
+				"resource_path": model.resource_path,
+			})
 
 			if model is VoxelBlockyModelCube:
 				var sides: Dictionary[Global.BlockSide, StringName] = {
@@ -162,44 +177,29 @@ static func update_block_library(terrain: VoxelTerrain):
 					Global.BlockSide.BACK: "tile_back"
 				}
 
-				model.atlas_size_in_tiles = TEMP_get_atlas_size_in_tiles()
+				model.atlas_size_in_tiles = AtlasService.get_size_in_tiles()
 
-				var front := TEMP_find_block(block.uuid, Global.BlockSide.FRONT)
+				var front := AtlasService.get_block_side_texture(block.uuid, Global.BlockSide.FRONT)
+				if block.uuid == "dirt":
+					print("FRONT ", front)
+				if front != {}:
+					for side in sides:
+						model[sides[side]].x = front["position"][0]
+						model[sides[side]].y = front["position"][1]
 
-				for side in sides:
-					model[sides[side]].x = front["position"][0]
-					model[sides[side]].y = front["position"][1]
-
-					if block.textures.has(side):
-						var tex := TEMP_find_block(block.uuid, side)
-						model[sides[side]].x = tex["position"][0]
-						model[sides[side]].y = tex["position"][1]
+						if block.textures.has(side):
+							var tex := AtlasService.get_block_side_texture(block.uuid, side)
+							model[sides[side]].x = tex["position"][0]
+							model[sides[side]].y = tex["position"][1]
 
 			library.add_model(model)
 
-static func TEMP_get_atlas_size_in_tiles() -> Vector2:
-	var file := FileAccess.open("res://atlas.json", FileAccess.READ)
-	var json := JSON.new()
-	if json.parse(file.get_as_text()) == Error.OK:
-		var data := json.data
-		var atlas_size = data["size"]
-		return Vector2(atlas_size[0], atlas_size[1])
-	file.close()
-
-	return Vector2(0, 0)
-
-static func TEMP_find_block(uuid: StringName, side: Global.BlockSide, path: String = "res://atlas.json") -> Dictionary:
-	var file := FileAccess.open(path, FileAccess.READ)
-	var json := JSON.new()
-	if json.parse(file.get_as_text()) == Error.OK:
-		var data := json.data
-		var textures = data["textures"] as Array
-		# print(textures)
-		var found_texs = textures.filter(func(texture):
-			# print(texture)
-			return texture["uuid"] == uuid and int(texture["side"]) == side
-		)
-		return found_texs[0] if found_texs.size() > 0 else {}
-	file.close()
-
-	return {}
+		var file = FileAccess.open("res://library.json", FileAccess.WRITE)
+		if file:
+			var editor_filesystem := EditorInterface.get_resource_filesystem()
+			if file.store_string(JSON.stringify(library_json)):
+				editor_filesystem.reimport_files(["res://library.json"])
+				print("Reimported library json")
+			file.close()
+		else:
+			print("Error opening file for writing.")

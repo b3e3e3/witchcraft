@@ -9,12 +9,13 @@ const WorldGenerator = preload("res://world_generator.gd")
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	terrain.generator = WorldGenerator.new()
 	Global.current_terrain = terrain
+	terrain.generator = WorldGenerator.new(terrain)
 
 	ECS.world = world
 
-func _process(delta):if ECS.world:
+func _process(delta):
+	if ECS.world:
 		ECS.process(delta)
 
 # func _on_player_block_placed(where: Vector3i, what: int) -> void:
