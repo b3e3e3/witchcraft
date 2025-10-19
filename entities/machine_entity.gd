@@ -11,14 +11,25 @@ func on_ready() -> void:
 	super.on_ready()
 
 	var transform := get_component(BlockTransformComponent) as BlockTransformComponent
-	var adjacent := find_adjacent_blocks(transform.position)
+	# var adjacent := find_adjacent_blocks()
 
-	for block in adjacent:
-		if block.has_component(BlockTransformComponent) and block.has_component(MachineComponent):
-			var block_pos := (block.get_component(BlockTransformComponent) as BlockTransformComponent).position
-			print("Found adjacent machine at %s" % block_pos)
+	# for block in adjacent:
+	# 	if block.has_component(BlockTransformComponent) and block.has_component(MachineComponent):
+	# 		var block_pos := (block.get_component(BlockTransformComponent) as BlockTransformComponent).position
+	# 		print("Found adjacent machine at %s" % block_pos)
+
+	# 		# create relationship
+	# 		if block is MachineEntity:
+	# 			connect_machine(self, block)
 	
 	create_labels(transform)
+
+# func connect_machine(from: MachineEntity, to: MachineEntity):
+# 	if to.has_relationship(Relationships.connected):
+# 		print("Already connected")
+# 		return
+# 	from.add_relationship(Relationship.new(ConnectedComponent.new(), to))
+# 	print("Created machine relationship")
 
 func create_labels(transform: BlockTransformComponent):
 	var statuslabel := Label3D.new()

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="BlockData" load_steps=3 format=3 uid="uid://vslnhyumalgm"]
+
+[ext_resource type="Script" uid="uid://ce2bs0pkj867w" path="res://blocks/block_data.gd" id="1_tisec"]
+
+[sub_resource type="VoxelBlockyModelCube" id="VoxelBlockyModelCube_tisec"]
+
+[resource]
+script = ExtResource("1_tisec")
+model = SubResource("VoxelBlockyModelCube_tisec")
+metadata/_custom_type_script = "uid://ce2bs0pkj867w"

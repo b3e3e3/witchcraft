@@ -8,6 +8,19 @@
 
 config_version=5
 
+[addons]
+
+resources_spreadsheet_view/array_color_tint=100.0
+resources_spreadsheet_view/color_rows=true
+resources_spreadsheet_view/array_min_width=128.0
+resources_spreadsheet_view/resource_preview_size=32.0
+resources_spreadsheet_view/clip_headers=false
+resources_spreadsheet_view/dupe_arrays=true
+resources_spreadsheet_view/context_menu_on_leftclick=false
+resources_spreadsheet_view/fold_docks=true
+resources_spreadsheet_view/resource_cell_label_mode=1
+resources_spreadsheet_view/freeze_first_column=true
+
 [application]
 
 config/name="witchcraft"
@@ -19,10 +32,11 @@ config/icon="res://icon.svg"
 
 Global="*res://globals.gd"
 ECS="*res://addons/gecs/ecs.gd"
+Relationships="*res://relationships.gd"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/gecs/plugin.cfg", "res://addons/gut/plugin.cfg")
+enabled=PackedStringArray("res://addons/b3e3e3_witchcraft/plugin.cfg", "res://addons/gecs/plugin.cfg", "res://addons/gut/plugin.cfg", "res://addons/resources_spreadsheet_view/plugin.cfg")
 
 [input]
 

@@ -8,7 +8,12 @@ func define_components() -> Array:
 		BlockTransformComponent.new()
 	]
 
-func find_adjacent_blocks(pos: Vector3i) -> Array[BlockEntity]:
+func find_adjacent_blocks() -> Array[BlockEntity]:
+	var transform := get_component(BlockTransformComponent) as BlockTransformComponent
+	if not transform: return []
+	
+	var pos := transform.position
+
 	var adjacent: Array[BlockEntity]
 
 	for block_pos in find_adjacent_voxels(pos):
