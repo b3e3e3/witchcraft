@@ -1,0 +1,2 @@
+class_name CableComponent
+extends MachineComponent

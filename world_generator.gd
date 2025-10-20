@@ -2,13 +2,7 @@ extends VoxelGeneratorScript
 
 const channel: int = VoxelBuffer.CHANNEL_TYPE
 
-const AIR = 0
-const GRASS = 1
-const DIRT = 2
-const WATER = 3
-
 const SQUASH = 16
-
 
 var FN: ZN_FastNoiseLite = ZN_FastNoiseLite.new()
 
@@ -34,22 +28,22 @@ func _generate_block(buffer: VoxelBuffer, origin: Vector3i, lod: int) -> void:
 	if lod != 0:
 		return
 
-	# FN.fractal_octaves = 3
-	
-	buffer.fill(AIR)
+	FN.fractal_octaves = 3
+
+	buffer.fill(AtlasService.get_block_library_index(&"air"))
 	# BaseGen.generate_block(buffer, origin, lod)
 
 	var base_height := 0.0
 	var scale := 120.0
 	var size := buffer.get_size()
-	
+
 	for z in range(size.z):
 		for x in range(size.x):
 			for y in range(size.y):
 				var elev_noise := generate_elevation(scale, origin, x, y, z)
 				var peak_noise := generate_peaks(scale, origin, x, y, z)
 				var eros_noise := generate_erosion(scale, origin, x, y, z)
-				
+
 				var base_noise := generate_base_terrain(scale, origin, x, y, z)
 
 				# var depth := base_height + (base_noise + peak_noise) * (elev_noise + eros_noise)
@@ -61,8 +55,8 @@ func _generate_block(buffer: VoxelBuffer, origin: Vector3i, lod: int) -> void:
 				# depth *= elev_noise - (scale/2)
 				if depth <= (origin.y + y):
 					if origin.y + y < 0:
-						buffer.set_voxel(WATER, x, y, z)
-					else:
-						buffer.set_voxel(AIR, x, y, z)
+						buffer.set_voxel(AtlasService.get_block_library_index(&"water"), x, y, z)
+					# else:
+					# 	buffer.set_voxel(AtlasService.get_block_library_index(&"air"), x, y, z)
 				else:
-					buffer.set_voxel(DIRT, x, y, z)
+					buffer.set_voxel(AtlasService.get_block_library_index(&"dirt"), x, y, z)
