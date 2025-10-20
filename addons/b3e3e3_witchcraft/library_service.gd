@@ -32,16 +32,16 @@ func update_block_library(terrain: VoxelTerrain, atlas_path: String = "res://atl
 			})
 
 			if model is VoxelBlockyModelCube:
-				var sides: Dictionary[Global.BlockSide, StringName] = {
-					Global.BlockSide.LEFT: "tile_left",
-					Global.BlockSide.RIGHT: "tile_right",
-					Global.BlockSide.TOP: "tile_top",
-					Global.BlockSide.BOTTOM: "tile_bottom",
-					Global.BlockSide.FRONT: "tile_front",
-					Global.BlockSide.BACK: "tile_back"
+				var sides: Dictionary[WC.BlockSide, StringName] = {
+					WC.BlockSide.LEFT: "tile_left",
+					WC.BlockSide.RIGHT: "tile_right",
+					WC.BlockSide.TOP: "tile_top",
+					WC.BlockSide.BOTTOM: "tile_bottom",
+					WC.BlockSide.FRONT: "tile_front",
+					WC.BlockSide.BACK: "tile_back"
 				}
 
-				var front := AtlasService.get_block_side_texture(block.uuid, Global.BlockSide.FRONT)
+				var front := AtlasService.get_block_side_texture(block.uuid, WC.BlockSide.FRONT)
 				if block.uuid == "dirt":
 					print("FRONT ", front)
 				if front != {}:

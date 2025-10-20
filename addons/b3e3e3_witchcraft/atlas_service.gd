@@ -42,7 +42,7 @@ func get_size_in_tiles(path: String = atlas_json_path) -> Vector2:
 func get_block_library_index(uuid: StringName) -> int:
 	return block_indexes[uuid] if block_indexes.has(uuid) else -1
 
-func get_block_side_texture(uuid: StringName, side: Global.BlockSide, path: String = atlas_path) -> Dictionary:
+func get_block_side_texture(uuid: StringName, side: WC.BlockSide, path: String = atlas_path) -> Dictionary:
 	var file := FileAccess.open(path, FileAccess.READ)
 	var json := JSON.new()
 	if json.parse(file.get_as_text()) == Error.OK:

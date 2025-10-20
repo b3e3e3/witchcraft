@@ -8,11 +8,11 @@ extends Resource
 
 @export var model: VoxelBlockyModel
 
-@export var textures: Dictionary[Global.BlockSide, Texture2D] = {
-	Global.BlockSide.FRONT: null,
-	Global.BlockSide.TOP: null,
-	Global.BlockSide.BOTTOM: null,
-	Global.BlockSide.LEFT: null,
-	Global.BlockSide.RIGHT: null,
-	Global.BlockSide.BACK: null,
+@export var textures: Dictionary[WC.BlockSide, Texture2D] = {
+	WC.BlockSide.FRONT: null,
+	WC.BlockSide.TOP: null,
+	WC.BlockSide.BOTTOM: null,
+	WC.BlockSide.LEFT: null,
+	WC.BlockSide.RIGHT: null,
+	WC.BlockSide.BACK: null,
 }

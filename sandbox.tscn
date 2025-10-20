@@ -94,6 +94,11 @@ metadata/_custom_type_script = "uid://juy3ncjbvhoa"
 
 [node name="MachineSystem" type="Node" parent="World/Systems"]
 script = ExtResource("8_igx0j")
+group = null
+process_empty = null
+active = null
+parallel_processing = null
+parallel_threshold = null
 metadata/_custom_type_script = "uid://ds28wm4vguxep"
 
 [connection signal="block_broken" from="Player" to="World/Systems/BlockObserver" method="_on_player_block_broken"]

@@ -13,20 +13,20 @@ func process(entity: Entity, delta: float) -> void:
 	machine.tick_count += 1
 	if machine.tick_count % 120 == 0:
 		if not machine.input_items.is_empty():
-			machine.ensure_action(Global.MachineAction.OPERATE)
+			machine.ensure_action(WC.MachineAction.OPERATE)
 			machine.output_items.append(machine.input_items.pop_back())
 		else:
-			machine.remove_action(Global.MachineAction.OPERATE)
+			machine.remove_action(WC.MachineAction.OPERATE)
 
 func update_label(entity: Entity):
 	var text := ""
 	var machine := entity.get_component(MachineComponent) as MachineComponent
 
-	if machine.has_action(Global.MachineAction.OPERATE):
+	if machine.has_action(WC.MachineAction.OPERATE):
 		text += "•Operate\n"
-	if machine.has_action(Global.MachineAction.INPUT):
+	if machine.has_action(WC.MachineAction.INPUT):
 		text += "•Input\n"
-	if machine.has_action(Global.MachineAction.OUTPUT):
+	if machine.has_action(WC.MachineAction.OUTPUT):
 		text += "•Output\n"
 	if machine.actions == 0:
 		text = "None"

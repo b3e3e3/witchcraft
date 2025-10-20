@@ -26,19 +26,19 @@ func recalculate_path(target_position: Vector3i) -> void:
 	path.clear()
 	path = astar.get_point_path(0, astar.get_closest_point(target_position))
 	if path.size() > 0:
-		var t := Global.current_terrain.get_voxel_tool()
+		var t := WC.current_terrain.get_voxel_tool()
 		print("Found path to %s" % t.get_voxel_metadata(path[0]).name)
 		for i in range(path.size()):
 			var p = path[i]
 			if t.get_voxel(p) == 4:
 				t.set_voxel(path[i-1], 2)
-	
+
 
 func calculate_cable_network(blocks: Array[BlockEntity]) -> void:
 	for i in range(blocks.size()):
 		var e := blocks[i]
 		if not e.has_component(BlockTransformComponent): continue
-		
+
 		var transform := e.get_component(BlockTransformComponent) as BlockTransformComponent
 		var pos := transform.position
 
@@ -60,5 +60,5 @@ func traverse_cables(entity: BlockEntity, blocks: Array[BlockEntity] = []) -> Ar
 			elif e.has_component(MachineComponent):
 				blocks.append(e)
 				print("Machine found!")
-	
+
 	return blocks

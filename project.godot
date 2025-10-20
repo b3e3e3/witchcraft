@@ -30,11 +30,11 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-Global="*res://globals.gd"
 ECS="*res://addons/gecs/ecs.gd"
 Relationships="*res://relationships.gd"
 AtlasService="*res://addons/b3e3e3_witchcraft/atlas_service.gd"
 LibraryService="*res://addons/b3e3e3_witchcraft/library_service.gd"
+WC="*res://addons/b3e3e3_witchcraft/globals.gd"
 
 [editor_plugins]
 
