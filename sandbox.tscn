@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://dfhrcnpf2ev8g" path="res://world.gd" id="1_rvmsc"]
 [ext_resource type="PackedScene" uid="uid://bxuo8t178ndey" path="res://player.tscn" id="2_rjrbw"]
 [ext_resource type="Script" uid="uid://dg7esmkq76vou" path="res://world_generator.gd" id="3_rjrbw"]
-[ext_resource type="Texture2D" uid="uid://upel8iekn34h" path="res://atlas.png" id="4_0fpt2"]
+[ext_resource type="Texture2D" uid="uid://5joamm3aw1pq" path="res://atlas.png" id="4_0fpt2"]
 [ext_resource type="Script" uid="uid://cdu5tlyk72uu4" path="res://addons/gecs/world.gd" id="7_44b12"]
 [ext_resource type="Script" uid="uid://lmublx8n1ibj" path="res://observers/cable_observer.gd" id="8_ai2o8"]
 [ext_resource type="Script" uid="uid://ds28wm4vguxep" path="res://systems/machine_system.gd" id="8_igx0j"]
@@ -44,7 +44,6 @@ tile_front = Vector2i(1, 0)
 material = SubResource("StandardMaterial3D_0fpt2")
 
 [sub_resource type="VoxelBlockyModelFluid" id="VoxelBlockyModelFluid_40bgd"]
-color = Color(0, 0.5176471, 1, 1)
 fluid = SubResource("VoxelBlockyFluid_0fpt2")
 
 [sub_resource type="VoxelBlockyLibrary" id="VoxelBlockyLibrary_0fpt2"]
